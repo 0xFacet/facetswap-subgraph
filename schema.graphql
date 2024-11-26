@@ -34,6 +34,7 @@ type Token @entity {
 
   # token specific volume
   tradeVolume: BigDecimal!
+  tradeVolumeETH: BigDecimal!
   tradeVolumeUSD: BigDecimal!
   untrackedVolumeUSD: BigDecimal!
 
@@ -78,6 +79,7 @@ type Pair @entity {
   # lifetime volume stats
   volumeToken0: BigDecimal!
   volumeToken1: BigDecimal!
+  volumeETH: BigDecimal!
   volumeUSD: BigDecimal!
   untrackedVolumeUSD: BigDecimal!
   txCount: BigInt!
@@ -224,6 +226,7 @@ type PairHourData @entity {
   # volume stats
   hourlyVolumeToken0: BigDecimal!
   hourlyVolumeToken1: BigDecimal!
+  hourlyVolumeETH: BigDecimal!
   hourlyVolumeUSD: BigDecimal!
   hourlyTxns: BigInt!
 }
@@ -249,6 +252,7 @@ type PairDayData @entity {
   # volume stats
   dailyVolumeToken0: BigDecimal!
   dailyVolumeToken1: BigDecimal!
+  dailyVolumeETH: BigDecimal!
   dailyVolumeUSD: BigDecimal!
   dailyTxns: BigInt!
 }

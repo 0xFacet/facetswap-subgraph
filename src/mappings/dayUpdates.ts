@@ -44,6 +44,7 @@ export function updatePairDayData(event: ethereum.Event): PairDayData {
     pairDayData.pairAddress = event.address
     pairDayData.dailyVolumeToken0 = ZERO_BD
     pairDayData.dailyVolumeToken1 = ZERO_BD
+    pairDayData.dailyVolumeETH = ZERO_BD
     pairDayData.dailyVolumeUSD = ZERO_BD
     pairDayData.dailyTxns = ZERO_BI
   }
@@ -72,6 +73,7 @@ export function updatePairHourData(event: ethereum.Event): PairHourData {
     pairHourData.hourlyVolumeToken0 = ZERO_BD
     pairHourData.hourlyVolumeToken1 = ZERO_BD
     pairHourData.hourlyVolumeUSD = ZERO_BD
+    pairHourData.hourlyVolumeETH = ZERO_BD
     pairHourData.hourlyTxns = ZERO_BI
   }
 

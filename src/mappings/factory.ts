@@ -56,6 +56,7 @@ export function handleNewPair(event: PairCreated): void {
     token0.decimals = decimals
     token0.derivedETH = ZERO_BD
     token0.tradeVolume = ZERO_BD
+    token0.tradeVolumeETH = ZERO_BD
     token0.tradeVolumeUSD = ZERO_BD
     token0.untrackedVolumeUSD = ZERO_BD
     token0.totalLiquidity = ZERO_BD
@@ -78,6 +79,7 @@ export function handleNewPair(event: PairCreated): void {
     token1.decimals = decimals
     token1.derivedETH = ZERO_BD
     token1.tradeVolume = ZERO_BD
+    token1.tradeVolumeETH = ZERO_BD
     token1.tradeVolumeUSD = ZERO_BD
     token1.untrackedVolumeUSD = ZERO_BD
     token1.totalLiquidity = ZERO_BD
@@ -100,6 +102,7 @@ export function handleNewPair(event: PairCreated): void {
   pair.totalSupply = ZERO_BD
   pair.volumeToken0 = ZERO_BD
   pair.volumeToken1 = ZERO_BD
+  pair.volumeETH = ZERO_BD
   pair.volumeUSD = ZERO_BD
   pair.untrackedVolumeUSD = ZERO_BD
   pair.token0Price = ZERO_BD
