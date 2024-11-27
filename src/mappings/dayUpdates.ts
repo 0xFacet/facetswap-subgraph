@@ -63,8 +63,8 @@ export function getRolling24HourVolume(pairId: string, currentTimestamp: BigInt)
   let currentHourIndex = currentTimestamp.toI32() / 3600
   let rollingVolumeETH = ZERO_BD
 
-  // Query for all PairHourData entities within the last 24 hours
-  for (let i = 0; i < 24; i++) {
+  // Offset by one to exclude the current incomplete hour
+  for (let i = 1; i <= 24; i++) {
     let hourIndex = currentHourIndex - i
     let hourPairID = pairId.concat('-').concat(BigInt.fromI32(hourIndex).toString())
     let pairHourData = PairHourData.load(hourPairID)
