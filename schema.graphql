@@ -130,6 +130,7 @@ type Mint @entity {
   amount1: BigDecimal
   logIndex: BigInt
   # derived amount based on available prices of tokens
+  amountETH: BigDecimal
   amountUSD: BigDecimal
 
   # optional fee fields, if a Transfer event is fired in _mintFee
@@ -154,6 +155,7 @@ type Burn @entity {
   to: Bytes
   logIndex: BigInt
   # derived amount based on available prices of tokens
+  amountETH: BigDecimal
   amountUSD: BigDecimal
 
   # mark uncomplete in ETH case
@@ -182,6 +184,7 @@ type Swap @entity {
   logIndex: BigInt
 
   # derived info
+  amountETH: BigDecimal!
   amountUSD: BigDecimal!
 }
 

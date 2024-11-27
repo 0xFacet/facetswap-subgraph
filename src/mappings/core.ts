@@ -14,7 +14,7 @@ import {
 import { Burn, Mint, Swap, Sync, Transfer } from '../types/templates/Pair/Pair'
 import { updatePairDayData, updatePairHourData, updateTokenDayData, updateUniswapDayData } from './dayUpdates'
 import { ADDRESS_ZERO, BI_18, convertTokenToDecimal, createUser, FACTORY_ADDRESS, ONE_BI, ZERO_BD } from './helpers'
-import { findEthPerToken, getTrackedLiquidityUSD, getTrackedVolumeETH, getTrackedVolumeUSD } from './pricing'
+import { findEthPerToken, getTrackedLiquidityETH, getTrackedVolumeETH, getTrackedVolumeUSD } from './pricing'
 
 function isCompleteMint(mintId: string): boolean {
   return MintEvent.load(mintId)!.sender !== null // sufficient checks
@@ -227,14 +227,7 @@ export function handleSync(event: Sync): void {
   token1.save()
 
   // get tracked liquidity - will be 0 if neither is in whitelist
-  let trackedLiquidityETH: BigDecimal
-  if (bundle.ethPrice.notEqual(ZERO_BD)) {
-    trackedLiquidityETH = getTrackedLiquidityUSD(pair.reserve0, token0 as Token, pair.reserve1, token1 as Token).div(
-      bundle.ethPrice,
-    )
-  } else {
-    trackedLiquidityETH = ZERO_BD
-  }
+  let trackedLiquidityETH = getTrackedLiquidityETH(pair.reserve0, token0 as Token, pair.reserve1, token1 as Token)
 
   // use derived amounts within pair
   pair.trackedReserveETH = trackedLiquidityETH
@@ -292,10 +285,10 @@ export function handleMint(event: Mint): void {
 
   // get new amounts of USD and ETH for tracking
   let bundle = Bundle.load('1')!
-  let amountTotalUSD = token1.derivedETH
+  let amountTotalETH = token1.derivedETH
     .times(token1Amount)
     .plus(token0.derivedETH.times(token0Amount))
-    .times(bundle.ethPrice)
+  let amountTotalUSD = amountTotalETH.times(bundle.ethPrice)
 
   // update txn counts
   pair.txCount = pair.txCount.plus(ONE_BI)
@@ -311,6 +304,7 @@ export function handleMint(event: Mint): void {
   mint.amount0 = token0Amount as BigDecimal
   mint.amount1 = token1Amount as BigDecimal
   mint.logIndex = event.logIndex
+  mint.amountETH = amountTotalETH as BigDecimal
   mint.amountUSD = amountTotalUSD as BigDecimal
   mint.save()
 
@@ -356,10 +350,10 @@ export function handleBurn(event: Burn): void {
 
   // get new amounts of USD and ETH for tracking
   let bundle = Bundle.load('1')!
-  let amountTotalUSD = token1.derivedETH
+  let amountTotalETH = token1.derivedETH
     .times(token1Amount)
     .plus(token0.derivedETH.times(token0Amount))
-    .times(bundle.ethPrice)
+  let amountTotalUSD = amountTotalETH.times(bundle.ethPrice)
 
   // update txn counts
   uniswap.txCount = uniswap.txCount.plus(ONE_BI)
@@ -377,6 +371,7 @@ export function handleBurn(event: Burn): void {
   burn.amount1 = token1Amount as BigDecimal
   // burn.to = event.params.to
   burn.logIndex = event.logIndex
+  burn.amountETH = amountTotalETH as BigDecimal
   burn.amountUSD = amountTotalUSD as BigDecimal
   burn.save()
 
@@ -484,6 +479,7 @@ export function handleSwap(event: Swap): void {
   swap.from = event.transaction.from
   swap.logIndex = event.logIndex
   // use the tracked amount if we have it
+  swap.amountETH = trackedAmountETH === ZERO_BD ? derivedAmountETH : trackedAmountETH
   swap.amountUSD = trackedAmountUSD === ZERO_BD ? derivedAmountUSD : trackedAmountUSD
   swap.save()
 
