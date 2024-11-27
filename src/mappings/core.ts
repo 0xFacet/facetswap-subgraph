@@ -12,7 +12,7 @@ import {
   UniswapFactory,
 } from '../types/schema'
 import { Burn, Mint, Swap, Sync, Transfer } from '../types/templates/Pair/Pair'
-import { updatePairDayData, updatePairHourData, updateTokenDayData, updateUniswapDayData } from './dayUpdates'
+import { updatePairDayData, getRolling24HourVolume, updatePairHourData, updateTokenDayData, updateUniswapDayData } from './dayUpdates'
 import { ADDRESS_ZERO, BI_18, convertTokenToDecimal, createUser, FACTORY_ADDRESS, ONE_BI, ZERO_BD } from './helpers'
 import { findEthPerToken, getTrackedLiquidityETH, getTrackedVolumeETH, getTrackedVolumeUSD } from './pricing'
 
@@ -533,4 +533,8 @@ export function handleSwap(event: Swap): void {
     amount1Total.times(token1.derivedETH as BigDecimal).times(bundle.ethPrice),
   )
   token1DayData.save()
+  
+  // Update the 24-hour rolling volume in the Pair entity
+  pair.volumeETH24h = getRolling24HourVolume(pair.id, event.block.timestamp)
+  pair.save()
 }

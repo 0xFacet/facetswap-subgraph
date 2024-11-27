@@ -83,6 +83,9 @@ type Pair @entity {
   volumeUSD: BigDecimal!
   untrackedVolumeUSD: BigDecimal!
   txCount: BigInt!
+  
+  # 24h volume stats
+  volumeETH24h: BigDecimal!
 
   # creation stats
   createdAtTimestamp: BigInt!

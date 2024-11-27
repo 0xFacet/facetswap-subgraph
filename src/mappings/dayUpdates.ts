@@ -59,6 +59,24 @@ export function updatePairDayData(event: ethereum.Event): PairDayData {
   return pairDayData as PairDayData
 }
 
+export function getRolling24HourVolume(pairId: string, currentTimestamp: BigInt): BigDecimal {
+  let currentHourIndex = currentTimestamp.toI32() / 3600
+  let rollingVolumeETH = ZERO_BD
+
+  // Query for all PairHourData entities within the last 24 hours
+  for (let i = 0; i < 24; i++) {
+    let hourIndex = currentHourIndex - i
+    let hourPairID = pairId.concat('-').concat(BigInt.fromI32(hourIndex).toString())
+    let pairHourData = PairHourData.load(hourPairID)
+
+    if (pairHourData) {
+      rollingVolumeETH = rollingVolumeETH.plus(pairHourData.hourlyVolumeETH)
+    }
+  }
+
+  return rollingVolumeETH
+}
+
 export function updatePairHourData(event: ethereum.Event): PairHourData {
   let timestamp = event.block.timestamp.toI32()
   let hourIndex = timestamp / 3600 // get unique hour within unix history
