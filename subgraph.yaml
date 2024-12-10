@@ -6,7 +6,7 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: Factory
-    network: facetsepolia
+    network: facet
     source:
       address: '0xc5c93c9553437bf94cf07ad2e8659197c094d5b4'
       abi: Factory
@@ -34,7 +34,7 @@ dataSources:
 templates:
   - kind: ethereum/contract
     name: Pair
-    network: facetsepolia
+    network: facet
     source:
       abi: Pair
     mapping:
