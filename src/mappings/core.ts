@@ -541,13 +541,20 @@ export function handleSwap(event: Swap): void {
 }
 
 export function handleFeeAdjustedSwap(event: FeeAdjustedSwap): void {
-  // Calculate the log index of the related Swap event
-  let swapLogIndex = event.logIndex.minus(BigInt.fromI32(3)); // Assuming the difference is always 3
-  let swapId = event.transaction.hash.toHexString().concat('-').concat(swapLogIndex.toString());
-  let swap = SwapEvent.load(swapId);
+  // Load the transaction entity using the transaction hash
+  let transaction = Transaction.load(event.transaction.hash.toHexString());
 
-  if (swap !== null) {
-    swap.recipient = event.params.to;
-    swap.save();
+  if (transaction !== null) {
+    // Calculate the SwapEvent ID based on the transaction's swaps array
+    let swapId = event.transaction.hash.toHexString().concat('-').concat(BigInt.fromI32(transaction.swaps.length).toString());
+
+    // Load the SwapEvent entity using the calculated ID
+    let swap = SwapEvent.load(swapId);
+
+    if (swap !== null) {
+      // Assign the recipient value directly from event parameters
+      swap.recipient = event.params.to;
+      swap.save();
+    }
   }
 }
