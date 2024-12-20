@@ -1,5 +1,5 @@
 /* eslint-disable prefer-const */
-import { BigDecimal, BigInt, Bytes, ethereum, log, store } from '@graphprotocol/graph-ts'
+import { BigDecimal, BigInt, ethereum, store } from '@graphprotocol/graph-ts'
 
 import {
   Bundle,
@@ -15,8 +15,7 @@ import { Burn, Mint, Swap, Sync, Transfer } from '../types/templates/Pair/Pair'
 import { updatePairDayData, getRolling24HourVolume, updatePairHourData, updateTokenDayData, updateUniswapDayData } from './dayUpdates'
 import { ADDRESS_ZERO, BI_18, convertTokenToDecimal, createUser, FACTORY_ADDRESS, ONE_BI, ZERO_BD } from './helpers'
 import { findEthPerToken, getTrackedLiquidityETH, getTrackedVolumeETH, getTrackedVolumeUSD } from './pricing'
-
-const FEE_ADJUSTED_SWAP_TOPIC = Bytes.fromHexString("0xb9418d56e2d2175bdbe3143157c16d3d3c6e2b985120af03d0e76590315ed1dc");
+import { FeeAdjustedSwap } from '../types/templates/Router/Router'
 
 function isCompleteMint(mintId: string): boolean {
   return MintEvent.load(mintId)!.sender !== null // sufficient checks
@@ -466,33 +465,6 @@ export function handleSwap(event: Swap): void {
   let swap = new SwapEvent(
     event.transaction.hash.toHexString().concat('-').concat(BigInt.fromI32(swaps.length).toString()),
   )
-  
-
-  if (event.receipt != null) {
-    log.info("Receipt exists for transaction {}", [event.transaction.hash.toHexString()]);
-    
-    let receipt = event.receipt as ethereum.TransactionReceipt;
-    if (receipt.logs) {
-      log.info("Number of logs in receipt: {}", [receipt.logs.length.toString()]);
-      
-      let logs = receipt.logs;
-      for (let i = 0; i < logs.length; i++) {
-        let logEntry = logs[i];
-        log.info("Processing log #{} for transaction {}", [
-          i.toString(),
-          event.transaction.hash.toHexString(),
-        ]);
-        log.info("Log address: {}", [logEntry.address.toHexString()]);
-        log.info("Log data: {}", [logEntry.data.toHexString()]);
-        log.info("Log topics: {}", [logEntry.topics.join(", ")]);
-      }
-    } else {
-      log.info("No logs found in receipt for transaction {}", [event.transaction.hash.toHexString()]);
-    }
-  } else {
-    log.info("No receipt found for transaction {}", [event.transaction.hash.toHexString()]);
-  }
-  
 
   // update swap event
   swap.transaction = transaction.id
@@ -500,7 +472,6 @@ export function handleSwap(event: Swap): void {
   swap.timestamp = transaction.timestamp
   swap.transaction = transaction.id
   swap.sender = event.params.sender
-  // swap.recipient = recipient!
   swap.amount0In = amount0In
   swap.amount1In = amount1In
   swap.amount0Out = amount0Out
@@ -567,4 +538,16 @@ export function handleSwap(event: Swap): void {
   // Update the 24-hour rolling volume in the Pair entity
   pair.volumeETH24h = getRolling24HourVolume(pair.id, event.block.timestamp)
   pair.save()
+}
+
+export function handleFeeAdjustedSwap(event: FeeAdjustedSwap): void {
+  // Calculate the log index of the related Swap event
+  let swapLogIndex = event.logIndex.minus(BigInt.fromI32(3)); // Assuming the difference is always 3
+  let swapId = event.transaction.hash.toHexString().concat('-').concat(swapLogIndex.toString());
+  let swap = SwapEvent.load(swapId);
+
+  if (swap !== null) {
+    swap.recipient = event.params.to;
+    swap.save();
+  }
 }

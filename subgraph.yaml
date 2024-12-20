@@ -61,3 +61,21 @@ templates:
           handler: handleTransfer
         - event: Sync(uint112,uint112)
           handler: handleSync
+  - kind: ethereum/contract
+    name: Router
+    network: facet
+    source:
+      abi: Router
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      file: ./src/mappings/core.ts
+      entities:
+        - Router
+      abis:
+        - name: Router
+          file: ./abis/router.json
+      eventHandlers:
+        - event: FeeAdjustedSwap(indexed address,indexed address,uint256,uint256,uint256,indexed address)
+          handler: handleFeeAdjustedSwap

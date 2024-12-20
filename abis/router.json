@@ -1,0 +1,948 @@
+[
+  {
+      "inputs": [],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+  },
+  {
+      "inputs": [],
+      "name": "AlreadyInitialized",
+      "type": "error"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "admin",
+              "type": "address"
+          }
+      ],
+      "name": "ERC1967InvalidAdmin",
+      "type": "error"
+  },
+  {
+      "inputs": [],
+      "name": "InvalidInitialization",
+      "type": "error"
+  },
+  {
+      "inputs": [],
+      "name": "NewOwnerIsZeroAddress",
+      "type": "error"
+  },
+  {
+      "inputs": [],
+      "name": "NoHandoverRequest",
+      "type": "error"
+  },
+  {
+      "inputs": [],
+      "name": "NotInitializing",
+      "type": "error"
+  },
+  {
+      "inputs": [],
+      "name": "Unauthorized",
+      "type": "error"
+  },
+  {
+      "anonymous": false,
+      "inputs": [
+          {
+              "indexed": false,
+              "internalType": "address",
+              "name": "previousAdmin",
+              "type": "address"
+          },
+          {
+              "indexed": false,
+              "internalType": "address",
+              "name": "newAdmin",
+              "type": "address"
+          }
+      ],
+      "name": "AdminChanged",
+      "type": "event"
+  },
+  {
+      "anonymous": false,
+      "inputs": [
+          {
+              "indexed": false,
+              "internalType": "address",
+              "name": "previousAdmin",
+              "type": "address"
+          },
+          {
+              "indexed": false,
+              "internalType": "address",
+              "name": "newAdmin",
+              "type": "address"
+          }
+      ],
+      "name": "AdminChanged",
+      "type": "event"
+  },
+  {
+      "anonymous": false,
+      "inputs": [
+          {
+              "indexed": true,
+              "internalType": "address",
+              "name": "newImplementation",
+              "type": "address"
+          }
+      ],
+      "name": "ContractUpgraded",
+      "type": "event"
+  },
+  {
+      "anonymous": false,
+      "inputs": [
+          {
+              "indexed": true,
+              "internalType": "address",
+              "name": "inputToken",
+              "type": "address"
+          },
+          {
+              "indexed": true,
+              "internalType": "address",
+              "name": "outputToken",
+              "type": "address"
+          },
+          {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "inputAmount",
+              "type": "uint256"
+          },
+          {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "outputAmount",
+              "type": "uint256"
+          },
+          {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "feeAmount",
+              "type": "uint256"
+          },
+          {
+              "indexed": true,
+              "internalType": "address",
+              "name": "to",
+              "type": "address"
+          }
+      ],
+      "name": "FeeAdjustedSwap",
+      "type": "event"
+  },
+  {
+      "anonymous": false,
+      "inputs": [
+          {
+              "indexed": false,
+              "internalType": "uint64",
+              "name": "version",
+              "type": "uint64"
+          }
+      ],
+      "name": "Initialized",
+      "type": "event"
+  },
+  {
+      "anonymous": false,
+      "inputs": [
+          {
+              "indexed": true,
+              "internalType": "address",
+              "name": "pendingOwner",
+              "type": "address"
+          }
+      ],
+      "name": "OwnershipHandoverCanceled",
+      "type": "event"
+  },
+  {
+      "anonymous": false,
+      "inputs": [
+          {
+              "indexed": true,
+              "internalType": "address",
+              "name": "pendingOwner",
+              "type": "address"
+          }
+      ],
+      "name": "OwnershipHandoverRequested",
+      "type": "event"
+  },
+  {
+      "anonymous": false,
+      "inputs": [
+          {
+              "indexed": true,
+              "internalType": "address",
+              "name": "oldOwner",
+              "type": "address"
+          },
+          {
+              "indexed": true,
+              "internalType": "address",
+              "name": "newOwner",
+              "type": "address"
+          }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+  },
+  {
+      "anonymous": false,
+      "inputs": [
+          {
+              "indexed": false,
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+          }
+      ],
+      "name": "Paused",
+      "type": "event"
+  },
+  {
+      "anonymous": false,
+      "inputs": [
+          {
+              "indexed": false,
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+          }
+      ],
+      "name": "Unpaused",
+      "type": "event"
+  },
+  {
+      "anonymous": false,
+      "inputs": [
+          {
+              "indexed": true,
+              "internalType": "address",
+              "name": "newUpgradeAdmin",
+              "type": "address"
+          }
+      ],
+      "name": "UpgradeAdminChanged",
+      "type": "event"
+  },
+  {
+      "anonymous": false,
+      "inputs": [
+          {
+              "indexed": true,
+              "internalType": "address",
+              "name": "implementation",
+              "type": "address"
+          }
+      ],
+      "name": "Upgraded",
+      "type": "event"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "tokenA",
+              "type": "address"
+          },
+          {
+              "internalType": "address",
+              "name": "tokenB",
+              "type": "address"
+          },
+          {
+              "internalType": "uint256",
+              "name": "amountADesired",
+              "type": "uint256"
+          },
+          {
+              "internalType": "uint256",
+              "name": "amountBDesired",
+              "type": "uint256"
+          },
+          {
+              "internalType": "uint256",
+              "name": "amountAMin",
+              "type": "uint256"
+          },
+          {
+              "internalType": "uint256",
+              "name": "amountBMin",
+              "type": "uint256"
+          },
+          {
+              "internalType": "address",
+              "name": "to",
+              "type": "address"
+          },
+          {
+              "internalType": "uint256",
+              "name": "deadline",
+              "type": "uint256"
+          }
+      ],
+      "name": "addLiquidity",
+      "outputs": [
+          {
+              "internalType": "uint256",
+              "name": "amountA",
+              "type": "uint256"
+          },
+          {
+              "internalType": "uint256",
+              "name": "amountB",
+              "type": "uint256"
+          },
+          {
+              "internalType": "uint256",
+              "name": "liquidity",
+              "type": "uint256"
+          }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+          }
+      ],
+      "name": "calculateFeeAmount",
+      "outputs": [
+          {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [],
+      "name": "cancelOwnershipHandover",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "pendingOwner",
+              "type": "address"
+          }
+      ],
+      "name": "completeOwnershipHandover",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+  },
+  {
+      "inputs": [],
+      "name": "factory",
+      "outputs": [
+          {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "uint256",
+              "name": "amountOut",
+              "type": "uint256"
+          },
+          {
+              "internalType": "uint256",
+              "name": "reserveIn",
+              "type": "uint256"
+          },
+          {
+              "internalType": "uint256",
+              "name": "reserveOut",
+              "type": "uint256"
+          }
+      ],
+      "name": "getAmountIn",
+      "outputs": [
+          {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "uint256",
+              "name": "amountIn",
+              "type": "uint256"
+          },
+          {
+              "internalType": "uint256",
+              "name": "reserveIn",
+              "type": "uint256"
+          },
+          {
+              "internalType": "uint256",
+              "name": "reserveOut",
+              "type": "uint256"
+          }
+      ],
+      "name": "getAmountOut",
+      "outputs": [
+          {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "factory",
+              "type": "address"
+          },
+          {
+              "internalType": "uint256",
+              "name": "amountOut",
+              "type": "uint256"
+          },
+          {
+              "internalType": "address[]",
+              "name": "path",
+              "type": "address[]"
+          }
+      ],
+      "name": "getAmountsIn",
+      "outputs": [
+          {
+              "internalType": "uint256[]",
+              "name": "amounts",
+              "type": "uint256[]"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "factory",
+              "type": "address"
+          },
+          {
+              "internalType": "uint256",
+              "name": "amountIn",
+              "type": "uint256"
+          },
+          {
+              "internalType": "address[]",
+              "name": "path",
+              "type": "address[]"
+          }
+      ],
+      "name": "getAmountsOut",
+      "outputs": [
+          {
+              "internalType": "uint256[]",
+              "name": "amounts",
+              "type": "uint256[]"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [],
+      "name": "getProtocolFeeBPS",
+      "outputs": [
+          {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "factory",
+              "type": "address"
+          },
+          {
+              "internalType": "address",
+              "name": "tokenA",
+              "type": "address"
+          },
+          {
+              "internalType": "address",
+              "name": "tokenB",
+              "type": "address"
+          }
+      ],
+      "name": "getReserves",
+      "outputs": [
+          {
+              "internalType": "uint256",
+              "name": "reserveA",
+              "type": "uint256"
+          },
+          {
+              "internalType": "uint256",
+              "name": "reserveB",
+              "type": "uint256"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [],
+      "name": "getWETH",
+      "outputs": [
+          {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "_factory",
+              "type": "address"
+          },
+          {
+              "internalType": "address",
+              "name": "_WETH",
+              "type": "address"
+          },
+          {
+              "internalType": "uint256",
+              "name": "protocolFeeBPS",
+              "type": "uint256"
+          },
+          {
+              "internalType": "bool",
+              "name": "initialPauseState",
+              "type": "bool"
+          }
+      ],
+      "name": "initialize",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [],
+      "name": "isPaused",
+      "outputs": [
+          {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+          {
+              "internalType": "address",
+              "name": "result",
+              "type": "address"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "pendingOwner",
+              "type": "address"
+          }
+      ],
+      "name": "ownershipHandoverExpiresAt",
+      "outputs": [
+          {
+              "internalType": "uint256",
+              "name": "result",
+              "type": "uint256"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [],
+      "name": "pause",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "uint256",
+              "name": "amountA",
+              "type": "uint256"
+          },
+          {
+              "internalType": "uint256",
+              "name": "reserveA",
+              "type": "uint256"
+          },
+          {
+              "internalType": "uint256",
+              "name": "reserveB",
+              "type": "uint256"
+          }
+      ],
+      "name": "quote",
+      "outputs": [
+          {
+              "internalType": "uint256",
+              "name": "amountB",
+              "type": "uint256"
+          }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "tokenA",
+              "type": "address"
+          },
+          {
+              "internalType": "address",
+              "name": "tokenB",
+              "type": "address"
+          },
+          {
+              "internalType": "uint256",
+              "name": "liquidity",
+              "type": "uint256"
+          },
+          {
+              "internalType": "uint256",
+              "name": "amountAMin",
+              "type": "uint256"
+          },
+          {
+              "internalType": "uint256",
+              "name": "amountBMin",
+              "type": "uint256"
+          },
+          {
+              "internalType": "address",
+              "name": "to",
+              "type": "address"
+          },
+          {
+              "internalType": "uint256",
+              "name": "deadline",
+              "type": "uint256"
+          }
+      ],
+      "name": "removeLiquidity",
+      "outputs": [
+          {
+              "internalType": "uint256",
+              "name": "amountA",
+              "type": "uint256"
+          },
+          {
+              "internalType": "uint256",
+              "name": "amountB",
+              "type": "uint256"
+          }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+  },
+  {
+      "inputs": [],
+      "name": "requestOwnershipHandover",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "_factory",
+              "type": "address"
+          }
+      ],
+      "name": "setFactory",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "uint256",
+              "name": "maxPathLength",
+              "type": "uint256"
+          }
+      ],
+      "name": "setPathLength",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "_WETH",
+              "type": "address"
+          }
+      ],
+      "name": "setWETH",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "uint256",
+              "name": "amountIn",
+              "type": "uint256"
+          },
+          {
+              "internalType": "uint256",
+              "name": "amountOutMin",
+              "type": "uint256"
+          },
+          {
+              "internalType": "address[]",
+              "name": "path",
+              "type": "address[]"
+          },
+          {
+              "internalType": "address",
+              "name": "to",
+              "type": "address"
+          },
+          {
+              "internalType": "uint256",
+              "name": "deadline",
+              "type": "uint256"
+          }
+      ],
+      "name": "swapExactTokensForTokens",
+      "outputs": [
+          {
+              "internalType": "uint256[]",
+              "name": "amounts",
+              "type": "uint256[]"
+          }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "uint256",
+              "name": "amountOut",
+              "type": "uint256"
+          },
+          {
+              "internalType": "uint256",
+              "name": "amountInMax",
+              "type": "uint256"
+          },
+          {
+              "internalType": "address[]",
+              "name": "path",
+              "type": "address[]"
+          },
+          {
+              "internalType": "address",
+              "name": "to",
+              "type": "address"
+          },
+          {
+              "internalType": "uint256",
+              "name": "deadline",
+              "type": "uint256"
+          }
+      ],
+      "name": "swapTokensForExactTokens",
+      "outputs": [
+          {
+              "internalType": "uint256[]",
+              "name": "amounts",
+              "type": "uint256[]"
+          }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "newOwner",
+              "type": "address"
+          }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+  },
+  {
+      "inputs": [],
+      "name": "unpause",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "uint256",
+              "name": "protocolFeeBPS",
+              "type": "uint256"
+          }
+      ],
+      "name": "updateProtocolFee",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "user",
+              "type": "address"
+          },
+          {
+              "internalType": "address",
+              "name": "tokenA",
+              "type": "address"
+          },
+          {
+              "internalType": "address",
+              "name": "tokenB",
+              "type": "address"
+          }
+      ],
+      "name": "userStats",
+      "outputs": [
+          {
+              "internalType": "uint256",
+              "name": "userTokenABalance",
+              "type": "uint256"
+          },
+          {
+              "internalType": "uint256",
+              "name": "userTokenBBalance",
+              "type": "uint256"
+          },
+          {
+              "internalType": "string",
+              "name": "tokenAName",
+              "type": "string"
+          },
+          {
+              "internalType": "string",
+              "name": "tokenBName",
+              "type": "string"
+          },
+          {
+              "internalType": "uint256",
+              "name": "tokenAReserves",
+              "type": "uint256"
+          },
+          {
+              "internalType": "uint256",
+              "name": "tokenBReserves",
+              "type": "uint256"
+          },
+          {
+              "internalType": "uint256",
+              "name": "userLPBalance",
+              "type": "uint256"
+          },
+          {
+              "internalType": "address",
+              "name": "pairAddress",
+              "type": "address"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "to",
+              "type": "address"
+          }
+      ],
+      "name": "withdrawFees",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  }
+]
