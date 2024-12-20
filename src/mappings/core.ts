@@ -1,5 +1,5 @@
 /* eslint-disable prefer-const */
-import { BigDecimal, BigInt, store } from '@graphprotocol/graph-ts'
+import { BigDecimal, BigInt, Bytes, ethereum, store } from '@graphprotocol/graph-ts'
 
 import {
   Bundle,
@@ -15,6 +15,8 @@ import { Burn, Mint, Swap, Sync, Transfer } from '../types/templates/Pair/Pair'
 import { updatePairDayData, getRolling24HourVolume, updatePairHourData, updateTokenDayData, updateUniswapDayData } from './dayUpdates'
 import { ADDRESS_ZERO, BI_18, convertTokenToDecimal, createUser, FACTORY_ADDRESS, ONE_BI, ZERO_BD } from './helpers'
 import { findEthPerToken, getTrackedLiquidityETH, getTrackedVolumeETH, getTrackedVolumeUSD } from './pricing'
+
+const FEE_ADJUSTED_SWAP_TOPIC = Bytes.fromHexString("0xb9418d56e2d2175bdbe3143157c16d3d3c6e2b985120af03d0e76590315ed1dc");
 
 function isCompleteMint(mintId: string): boolean {
   return MintEvent.load(mintId)!.sender !== null // sufficient checks
@@ -464,6 +466,23 @@ export function handleSwap(event: Swap): void {
   let swap = new SwapEvent(
     event.transaction.hash.toHexString().concat('-').concat(BigInt.fromI32(swaps.length).toString()),
   )
+  
+  // Extract recipient from FeeAdjustedSwap logs
+  let recipient: Bytes | null = null;
+  if (event.receipt?.logs) {
+    for (let log of event.receipt?.logs) {
+      if (log.topics.length > 0 && log.topics[0] == FEE_ADJUSTED_SWAP_TOPIC) {
+        let decodedLog = ethereum.decode(
+          "(address,address,uint256,uint256,uint256,address)",
+          log.data
+        );
+        if (decodedLog) {
+          recipient = decodedLog.toAddressArray()[5];
+          break;
+        }
+      }
+    }
+  }
 
   // update swap event
   swap.transaction = transaction.id
@@ -471,6 +490,7 @@ export function handleSwap(event: Swap): void {
   swap.timestamp = transaction.timestamp
   swap.transaction = transaction.id
   swap.sender = event.params.sender
+  swap.recipient = recipient!
   swap.amount0In = amount0In
   swap.amount1In = amount1In
   swap.amount0Out = amount0Out
