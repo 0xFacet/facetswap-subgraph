@@ -178,7 +178,7 @@ type Swap @entity {
 
   # populated from the Swap event
   sender: Bytes!
-  recipient: Bytes!
+  # recipient: Bytes!
   from: Bytes! # the EOA that initiated the txn
   amount0In: BigDecimal!
   amount1In: BigDecimal!

@@ -1,5 +1,5 @@
 /* eslint-disable prefer-const */
-import { BigDecimal, BigInt, Bytes, ethereum, store } from '@graphprotocol/graph-ts'
+import { BigDecimal, BigInt, Bytes, ethereum, log, store } from '@graphprotocol/graph-ts'
 
 import {
   Bundle,
@@ -467,24 +467,20 @@ export function handleSwap(event: Swap): void {
     event.transaction.hash.toHexString().concat('-').concat(BigInt.fromI32(swaps.length).toString()),
   )
   
-  // Extract recipient from FeeAdjustedSwap logs
-  let recipient: Bytes | null = null;
-  let receipt = event.receipt as ethereum.TransactionReceipt | null;
-  if (receipt && receipt.logs) {
-    for (let i = 0; i < receipt.logs.length; i++) {
-      let log = receipt.logs[i];
-      if (log.topics.length > 0 && log.topics[0] == FEE_ADJUSTED_SWAP_TOPIC) {
-        let decodedLog = ethereum.decode(
-          "(address,address,uint256,uint256,uint256,address)",
-          log.data
-        );
-        if (decodedLog) {
-          recipient = decodedLog.toAddressArray()[5];
-          break;
-        }
-      }
+  // Log data and topics for debugging
+  if (event.receipt && event.receipt.logs) {
+    let logs = event.receipt.logs;
+    for (let i = 0; i < logs.length; i++) {
+      let logEntry = logs[i];
+      log.info("Processing log #{} in transaction {}", [
+        i.toString(),
+        event.transaction.hash.toHexString(),
+      ]);
+      log.info("Log address: {}", [logEntry.address.toHexString()]);
+      log.info("Log data: {}", [logEntry.data.toHexString()]);
+      log.info("Log topics: {}", [logEntry.topics.join(", ")]);
     }
-  }  
+}
 
   // update swap event
   swap.transaction = transaction.id
@@ -492,7 +488,7 @@ export function handleSwap(event: Swap): void {
   swap.timestamp = transaction.timestamp
   swap.transaction = transaction.id
   swap.sender = event.params.sender
-  swap.recipient = recipient!
+  // swap.recipient = recipient!
   swap.amount0In = amount0In
   swap.amount1In = amount1In
   swap.amount0Out = amount0Out
