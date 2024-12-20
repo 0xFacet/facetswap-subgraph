@@ -546,7 +546,7 @@ export function handleFeeAdjustedSwap(event: FeeAdjustedSwap): void {
 
   if (transaction !== null) {
     // Calculate the SwapEvent ID based on the transaction's swaps array
-    let swapId = event.transaction.hash.toHexString().concat('-').concat(BigInt.fromI32(transaction.swaps.length).toString());
+    let swapId = event.transaction.hash.toHexString().concat('-').concat(BigInt.fromI32(transaction.swaps.length - 1).toString());
 
     // Load the SwapEvent entity using the calculated ID
     let swap = SwapEvent.load(swapId);
