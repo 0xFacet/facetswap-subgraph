@@ -1,5 +1,5 @@
 /* eslint-disable prefer-const */
-import { BigDecimal, BigInt, ethereum, store } from '@graphprotocol/graph-ts'
+import { BigDecimal, BigInt, ethereum, log, store } from '@graphprotocol/graph-ts'
 
 import {
   Bundle,
@@ -541,12 +541,14 @@ export function handleSwap(event: Swap): void {
 }
 
 export function handleFeeAdjustedSwap(event: FeeAdjustedSwap): void {
+  log.info("handleFeeAdjustedSwap triggered for transaction: {}", [event.transaction.hash.toHexString()]);
+
   // Load the transaction entity using the transaction hash
   let transaction = Transaction.load(event.transaction.hash.toHexString());
 
   if (transaction !== null) {
     // Calculate the SwapEvent ID based on the transaction's swaps array
-    let swapId = event.transaction.hash.toHexString().concat('-').concat(BigInt.fromI32(transaction.swaps.length - 1).toString());
+    let swapId = event.transaction.hash.toHexString().concat('-').concat(BigInt.fromI32(transaction.swaps.length).minus(BigInt.fromI32(1)).toString());
 
     // Load the SwapEvent entity using the calculated ID
     let swap = SwapEvent.load(swapId);
