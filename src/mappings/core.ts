@@ -467,20 +467,32 @@ export function handleSwap(event: Swap): void {
     event.transaction.hash.toHexString().concat('-').concat(BigInt.fromI32(swaps.length).toString()),
   )
   
-  // Log data and topics for debugging
-  if (event.receipt && event.receipt.logs) {
-    let logs = event.receipt.logs;
-    for (let i = 0; i < logs.length; i++) {
-      let logEntry = logs[i];
-      log.info("Processing log #{} in transaction {}", [
-        i.toString(),
-        event.transaction.hash.toHexString(),
-      ]);
-      log.info("Log address: {}", [logEntry.address.toHexString()]);
-      log.info("Log data: {}", [logEntry.data.toHexString()]);
-      log.info("Log topics: {}", [logEntry.topics.join(", ")]);
+
+  if (event.receipt != null) {
+    log.info("Receipt exists for transaction {}", [event.transaction.hash.toHexString()]);
+    
+    let receipt = event.receipt as ethereum.TransactionReceipt;
+    if (receipt.logs) {
+      log.info("Number of logs in receipt: {}", [receipt.logs.length.toString()]);
+      
+      let logs = receipt.logs;
+      for (let i = 0; i < logs.length; i++) {
+        let logEntry = logs[i];
+        log.info("Processing log #{} for transaction {}", [
+          i.toString(),
+          event.transaction.hash.toHexString(),
+        ]);
+        log.info("Log address: {}", [logEntry.address.toHexString()]);
+        log.info("Log data: {}", [logEntry.data.toHexString()]);
+        log.info("Log topics: {}", [logEntry.topics.join(", ")]);
+      }
+    } else {
+      log.info("No logs found in receipt for transaction {}", [event.transaction.hash.toHexString()]);
     }
-}
+  } else {
+    log.info("No receipt found for transaction {}", [event.transaction.hash.toHexString()]);
+  }
+  
 
   // update swap event
   swap.transaction = transaction.id
