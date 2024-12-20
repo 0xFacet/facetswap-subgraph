@@ -469,8 +469,10 @@ export function handleSwap(event: Swap): void {
   
   // Extract recipient from FeeAdjustedSwap logs
   let recipient: Bytes | null = null;
-  if (event.receipt && event.receipt.logs) {
-    for (let log of event.receipt.logs) {
+  let receipt = event.receipt as ethereum.TransactionReceipt | null;
+  if (receipt && receipt.logs) {
+    for (let i = 0; i < receipt.logs.length; i++) {
+      let log = receipt.logs[i];
       if (log.topics.length > 0 && log.topics[0] == FEE_ADJUSTED_SWAP_TOPIC) {
         let decodedLog = ethereum.decode(
           "(address,address,uint256,uint256,uint256,address)",
@@ -482,7 +484,7 @@ export function handleSwap(event: Swap): void {
         }
       }
     }
-  }
+  }  
 
   // update swap event
   swap.transaction = transaction.id
