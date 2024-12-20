@@ -541,8 +541,6 @@ export function handleSwap(event: Swap): void {
 }
 
 export function handleFeeAdjustedSwap(event: FeeAdjustedSwap): void {
-  log.info("handleFeeAdjustedSwap triggered for transaction: {}", [event.transaction.hash.toHexString()]);
-
   // Load the transaction entity using the transaction hash
   let transaction = Transaction.load(event.transaction.hash.toHexString());
 
