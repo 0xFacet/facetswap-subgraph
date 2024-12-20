@@ -65,14 +65,16 @@ templates:
     name: Router
     network: facet
     source:
+      address: '0xf29e6e319ac4ce8c100cfc02b1702eb3d275029e'
       abi: Router
+      startBlock: 0
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
       language: wasm/assemblyscript
       file: ./src/mappings/core.ts
       entities:
-        - Router
+        - SwapEvent
       abis:
         - name: Router
           file: ./abis/router.json
